@@ -21,6 +21,13 @@ from .services.gemini.client import GeminiService
 from .services.translation.translator import TranslationService
 from .services.ocr.engine import OCRService, GeminiOCRProvider
 from .services.speech import SpeechService, GeminiSpeechProvider
+from .services.clipboard import (
+    ClipboardService,
+    NotesService,
+    ClipboardMonitor,
+    ClipboardWriteGuard,
+)
+from .ui.clipboard import ClipboardWindow
 
 
 class MyszkaHUDApp(QObject):
@@ -38,6 +45,7 @@ class MyszkaHUDApp(QObject):
         # Usługi systemowe i AI (Gemini jako wspólne źródło prawdy)
         self.window_manager = WindowManager()
         self.clipboard_guard = ClipboardFreshnessGuard(timeout_ms=350)
+        self.clipboard_write_guard = ClipboardWriteGuard()
         self.text_executor = TextActionExecutor()
         
         self.gemini_service = GeminiService()
@@ -47,6 +55,16 @@ class MyszkaHUDApp(QObject):
         self.gemini_speech_provider = GeminiSpeechProvider(audio_provider=self.gemini_service)
         self.speech_service = SpeechService(provider=self.gemini_speech_provider)
 
+        # Moduł v0.6: Inteligentny Schowek & Podręczny Notes
+        self.clipboard_service = ClipboardService()
+        self.notes_service = NotesService()
+        self.clipboard_monitor = ClipboardMonitor(
+            service=self.clipboard_service,
+            write_guard=self.clipboard_write_guard,
+            window_manager=self.window_manager,
+            parent=self,
+        )
+
         # Inicjalizacja okien interfejsu
         self.hud_window = RadialHUDWindow()
         self.text_actions_menu = TextActionsMenuWindow()
@@ -55,6 +73,10 @@ class MyszkaHUDApp(QObject):
         self.ocr_result_window = OCRResultWindow(ocr_service=self.ocr_service)
         self.speech_overlay = SpeechRecordingOverlay()
         self.speech_result_window = SpeechResultWindow(speech_service=self.speech_service)
+        self.clipboard_window = ClipboardWindow(
+            clipboard_service=self.clipboard_service,
+            notes_service=self.notes_service,
+        )
 
         # Rejestracja uchwytów okien MyszkaHUD, by nie traktować ich jako aplikacji docelowej
         self.window_manager.set_app_hwnd(int(self.hud_window.winId()))
@@ -62,6 +84,11 @@ class MyszkaHUDApp(QObject):
         # Połączenie sygnałów głównego HUD
         self.hud_window.action_selected.connect(self._on_hud_action_selected)
         self.text_actions_menu.action_triggered.connect(self._on_text_action_triggered)
+
+        # Połączenie sygnałów okna schowka & notatek
+        self.clipboard_window.copy_requested.connect(self._on_text_copy_requested)
+        self.clipboard_window.paste_requested.connect(self._on_text_paste_requested)
+        self.clipboard_window.paste_enter_requested.connect(self._on_text_paste_enter_requested)
 
         # Połączenie sygnałów okna tłumacza
         self.translation_window.copy_requested.connect(self._on_text_copy_requested)
@@ -85,6 +112,9 @@ class MyszkaHUDApp(QObject):
         self.speech_result_window.translate_requested.connect(self._on_speech_translate_requested)
         self.speech_result_window.retry_recording_requested.connect(self._handle_speech_action)
 
+        # Uruchomienie monitora schowka
+        self.clipboard_monitor.start_monitoring()
+
         # Inicjalizacja globalnego nasłuchiwania skrótu Alt + Q
         self.hotkey_listener = WindowsHotkeyListener(key_code=ord('Q'), hotkey_id=1)
         self.hotkey_listener.triggered.connect(self._on_hotkey_triggered)
@@ -107,6 +137,8 @@ class MyszkaHUDApp(QObject):
             self.speech_overlay.hide()
         if self.speech_result_window.isVisible():
             self.speech_result_window.hide()
+        if self.clipboard_window.isVisible():
+            self.clipboard_window.hide()
 
         # 3. Pokazujemy główny radialny HUD pod kursorem
         self.hud_window.show_at_cursor()
@@ -125,6 +157,16 @@ class MyszkaHUDApp(QObject):
         elif item_id == "speech":
             # Uruchom tryb nagrywania mowy (Speech-to-Text)
             self._handle_speech_action()
+        elif item_id == "clipboard":
+            # Otwórz panel schowka & notatek
+            self.hud_window.hide()
+            self.clipboard_window._set_category("all")
+            self.clipboard_window.show_at_cursor()
+        elif item_id == "notes":
+            # Otwórz panel z filtrem na notatki
+            self.hud_window.hide()
+            self.clipboard_window._set_category("notes")
+            self.clipboard_window.show_at_cursor()
         else:
             print(f"[MyszkaHUD] Wybrano moduł: {item_id} (oczekuje na swój etap roadmapy)")
 
@@ -250,10 +292,11 @@ class MyszkaHUDApp(QObject):
             print(f"[MyszkaHUD] BŁĄD: Niepowodzenie wysłania sekwencji dla akcji {action.value}")
 
     def _on_text_copy_requested(self, text: str):
-        """Kopiuje tekst (z tłumacza lub OCR) do schowka."""
+        """Kopiuje tekst do schowka z zabezpieczeniem Self-Change Suppression."""
         clipboard = QGuiApplication.clipboard()
         if clipboard:
-            clipboard.setText(text)
+            with self.clipboard_write_guard.suppress(text):
+                clipboard.setText(text)
             print("[MyszkaHUD] Skopiowano tekst do schowka.")
 
     def _on_text_paste_requested(self, text: str):
@@ -272,7 +315,7 @@ class MyszkaHUDApp(QObject):
 
     def run(self) -> int:
         """Uruchomienie pętli głównej aplikacji."""
-        print("[MyszkaHUD] Uruchomiono MyszkaHUD v0.5 (STT pl-PL, Vision OCR, Translation, Text Actions)")
+        print("[MyszkaHUD] Uruchomiono MyszkaHUD v0.6 (Smart Clipboard & Notes, STT pl-PL, Vision OCR, Translation)")
         print("[MyszkaHUD] Skrót aktywacji: Alt + Q")
         
         self.hotkey_listener.start()
@@ -291,6 +334,8 @@ class MyszkaHUDApp(QObject):
         """Zwalnianie zasobów."""
         if hasattr(self, 'hotkey_listener') and self.hotkey_listener.isRunning():
             self.hotkey_listener.stop()
+        if hasattr(self, 'clipboard_monitor'):
+            self.clipboard_monitor.stop_monitoring()
         if hasattr(self, 'translation_window'):
             self.translation_window._cancel_current_worker()
         if hasattr(self, 'ocr_result_window'):

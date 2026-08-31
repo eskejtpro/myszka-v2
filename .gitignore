@@ -41,6 +41,12 @@ cache/
 data/
 settings/
 *.log
+*.db
+*.sqlite
+*.sqlite3
+*.wav
+*.pcm
+*.mp3
 
 # IDE & Editor
 .vscode/
