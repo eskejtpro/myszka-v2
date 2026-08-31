@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing & Cache
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# User Data & Logs (Windows %LOCALAPPDATA%\MyszkaHUD)
+logs/
+cache/
+data/
+settings/
+*.log
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Secrets & Local Config
+.env.local
+.env.*.local
+*.secret
+
+# AI Studio Workspace & Web Scaffolding (Non-Python runtime)
+node_modules/
+bun.lock
+package.json
+tsconfig.json
+vite.config.ts
+index.html
+metadata.json
+.env.example
+public/
+dist/

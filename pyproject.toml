@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "myszkahud"
+version = "0.1.0"
+description = "Nowoczesny radialny HUD narzędziowy pod kursorem myszy dla Windows 10 x64"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "PySide6>=6.6.0",
+    "psutil>=5.9.0",
+    "google-genai>=0.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[project.scripts]
+myszkahud = "myszkahud.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
