@@ -510,7 +510,7 @@ export default function App() {
                     className="px-3 py-1 bg-[#0284C7] hover:bg-sky-500 text-white text-xs font-bold rounded flex items-center gap-1 shadow-sm"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    Zakończ (Spacja)
+                    Zakończ (Enter)
                   </button>
                   <button
                     id="btn-speech-cancel"
@@ -520,7 +520,7 @@ export default function App() {
                     Anuluj (Esc)
                   </button>
                 </div>
-                <span className="text-[9px] text-slate-500 font-mono">16kHz / 48kHz auto</span>
+                <span className="text-[9px] text-slate-500 font-mono">Max: 60s | 16kHz / 48kHz auto</span>
               </div>
             </div>
           )}

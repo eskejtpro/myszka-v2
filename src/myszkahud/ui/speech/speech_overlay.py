@@ -123,6 +123,7 @@ from myszkahud.services.speech.audio_recorder import (
     AudioRecorder,
     AudioDeviceNotFoundError
 )
+from myszkahud.services.speech.service import MAX_RECORDING_SECONDS
 
 
 class SpeechRecordingOverlay(QWidget):
@@ -134,9 +135,10 @@ class SpeechRecordingOverlay(QWidget):
     cancelled = Signal()                # Emituje anulowanie nagrania
     error_occurred = Signal(str)        # Emituje błąd urządzenia
 
-    def __init__(self, recorder: Optional[AudioRecorder] = None, parent=None):
+    def __init__(self, recorder: Optional[AudioRecorder] = None, max_seconds: int = MAX_RECORDING_SECONDS, parent=None):
         super().__init__(parent)
         self.recorder = recorder or AudioRecorder(parent=self)
+        self.max_seconds = max_seconds
         self._elapsed_seconds = 0
         self._timer = QTimer(self)
         self._timer.setInterval(1000)
@@ -155,6 +157,7 @@ class SpeechRecordingOverlay(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setFixedSize(360, 110)
         self._init_ui()
+
 
     def _init_ui(self):
         main_layout = QVBoxLayout(self)
@@ -301,6 +304,10 @@ class SpeechRecordingOverlay(QWidget):
         secs = self._elapsed_seconds % 60
         self.lbl_timer.setText(f"{mins:02d}:{secs:02d}")
 
+        # Automatyczne zakończenie nagrania po osiągnięciu limitu MAX_RECORDING_SECONDS
+        if self._elapsed_seconds >= self.max_seconds:
+            self._on_stop_clicked()
+
     def _on_pulse_tick(self):
         self._pulse_state = not self._pulse_state
         if self._pulse_state:
@@ -352,11 +359,17 @@ class SpeechRecordingOverlay(QWidget):
         self.activateWindow()
 
     def keyPressEvent(self, event):
-        if event.key() in (Qt.Key_Return, Qt.Key_Enter, Qt.Key_Space):
-            self._on_stop_clicked()
-            event.accept()
-        elif event.key() == Qt.Key_Escape:
+        # Esc -> Anulowanie nagrania
+        if event.key() == Qt.Key_Escape:
             self._on_cancel_clicked()
             event.accept()
+        # Enter -> Zakończenie nagrania TYLKO gdy nakładka posiada aktywny fokus
+        elif event.key() in (Qt.Key_Return, Qt.Key_Enter):
+            self._on_stop_clicked()
+            event.accept()
         else:
-            super().keyPressEvent(event)
+            # Spacja i inne klawisze NIE są skrótem zakończenia nagrywania
+            if hasattr(super(), "keyPressEvent"):
+                super().keyPressEvent(event)
+
+

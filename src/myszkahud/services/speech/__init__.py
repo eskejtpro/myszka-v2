@@ -1,6 +1,7 @@
 """Pakiet usług Speech-to-Text (STT) dla MyszkaHUD."""
 
-from .service import SpeechService
+from .service import SpeechService, MAX_RECORDING_SECONDS
+from .state_machine import SpeechState, SpeechStateMachine, InvalidStateTransitionError
 from .audio_recorder import (
     AudioRecorder,
     AudioDeviceNotFoundError,
@@ -14,6 +15,10 @@ from .providers import (
 
 __all__ = [
     "SpeechService",
+    "MAX_RECORDING_SECONDS",
+    "SpeechState",
+    "SpeechStateMachine",
+    "InvalidStateTransitionError",
     "SpeechProvider",
     "GeminiSpeechProvider",
     "WindowsSpeechProvider",

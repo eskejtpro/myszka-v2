@@ -75,15 +75,9 @@ class AudioRecorder(QObject):
     error_occurred = Signal(str)   # Komunikat błędu
 
     def __init__(self, target_sample_rate: int = 16000, parent=None):
-        if QObject is object:
-            self._is_recording = False
-            self.target_sample_rate = target_sample_rate
-            self.actual_sample_rate = target_sample_rate
-            self.actual_channels = 1
-            self.actual_sample_width = 2
-            return
+        if QObject is not object:
+            super().__init__(parent)
 
-        super().__init__(parent)
         self.target_sample_rate = target_sample_rate
         self.actual_sample_rate = target_sample_rate
         self.actual_channels = 1
@@ -122,33 +116,41 @@ class AudioRecorder(QObject):
         Nie wymusza na siłę 16 kHz jeśli mikrofon go nie obsługuje,
         lecz pobiera preferredFormat().
         """
-        if QAudioFormat is None:
-            return None, 16000, 1, 2
-
-        desired_format = QAudioFormat()
-        desired_format.setSampleRate(self.target_sample_rate)
-        desired_format.setChannelCount(1)  # Mono
-        desired_format.setSampleFormat(QAudioFormat.SampleFormat.Int16)
+        if QAudioFormat is not None:
+            desired_format = QAudioFormat()
+            desired_format.setSampleRate(self.target_sample_rate)
+            desired_format.setChannelCount(1)  # Mono
+            desired_format.setSampleFormat(QAudioFormat.SampleFormat.Int16)
+        else:
+            # Fallback dla środowisk mockowych
+            desired_format = object()
 
         if hasattr(device, "isFormatSupported") and device.isFormatSupported(desired_format):
             return desired_format, self.target_sample_rate, 1, 2
 
         # Fallback do natywnego formatu mikrofonu
-        pref_format = device.preferredFormat()
-        sample_rate = pref_format.sampleRate() if pref_format.sampleRate() > 0 else 44100
-        channels = pref_format.channelCount() if pref_format.channelCount() > 0 else 1
-        
-        sample_fmt = pref_format.sampleFormat()
-        if sample_fmt == QAudioFormat.SampleFormat.Int16:
-            sample_width = 2
-        elif sample_fmt == QAudioFormat.SampleFormat.Int32 or sample_fmt == QAudioFormat.SampleFormat.Float:
-            sample_width = 4
-        elif sample_fmt == QAudioFormat.SampleFormat.UInt8:
-            sample_width = 1
-        else:
-            sample_width = 2
+        if hasattr(device, "preferredFormat"):
+            pref_format = device.preferredFormat()
+            sample_rate = pref_format.sampleRate() if pref_format.sampleRate() > 0 else 44100
+            channels = pref_format.channelCount() if pref_format.channelCount() > 0 else 1
+            
+            sample_fmt = pref_format.sampleFormat()
+            if QAudioFormat is not None:
+                if sample_fmt == QAudioFormat.SampleFormat.Int16:
+                    sample_width = 2
+                elif sample_fmt in (QAudioFormat.SampleFormat.Int32, QAudioFormat.SampleFormat.Float):
+                    sample_width = 4
+                elif sample_fmt == QAudioFormat.SampleFormat.UInt8:
+                    sample_width = 1
+                else:
+                    sample_width = 2
+            else:
+                sample_width = 2
 
-        return pref_format, sample_rate, channels, sample_width
+            return pref_format, sample_rate, channels, sample_width
+
+        return None, 16000, 1, 2
+
 
     def start_recording(self) -> bool:
         """

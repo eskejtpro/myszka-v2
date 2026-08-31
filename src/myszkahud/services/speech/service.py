@@ -2,6 +2,11 @@
 
 from typing import Optional
 from .providers import SpeechProvider, GeminiSpeechProvider, WindowsSpeechProvider
+from .state_machine import SpeechState, SpeechStateMachine, InvalidStateTransitionError
+
+# Globalny twardy limit czasu trwania nagrania mowy w sekundach
+MAX_RECORDING_SECONDS: int = 60
+
 
 
 class SpeechService:
