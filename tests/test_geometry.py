@@ -46,26 +46,26 @@ class TestHUDGeometry(unittest.TestCase):
         self.assertEqual(cy, 1080 - 430)
 
     def test_radial_item_angles(self):
-        """Weryfikacja 6 pozycji radialnych (co 60 stopni) w konfiguracji HUD."""
+        """Weryfikacja 9 pozycji radialnych (co 40 stopni) w konfiguracji HUD."""
         angles = [m["angle_deg"] for m in HUD_MODULES_CONFIG]
-        self.assertEqual(len(angles), 6)
-        expected_angles = [270, 330, 30, 90, 150, 210]
+        self.assertEqual(len(angles), 9)
+        expected_angles = [270, 310, 350, 30, 70, 110, 150, 190, 230]
         self.assertEqual(angles, expected_angles)
         
-        # Różnica kątowa między sąsiednimi elementami wynosi 60 stopni
+        # Różnica kątowa między sąsiednimi elementami wynosi 40 stopni
         for i in range(len(angles)):
-            diff = (angles[(i + 1) % 6] - angles[i]) % 360
-            self.assertEqual(diff, 60)
+            diff = (angles[(i + 1) % 9] - angles[i]) % 360
+            self.assertEqual(diff, 40)
 
     def test_hud_modules_unique_ids(self):
         """Wszystkie moduły muszą mieć unikalne identyfikatory."""
         ids = [m["id"] for m in HUD_MODULES_CONFIG]
         self.assertEqual(len(ids), len(set(ids)))
-        expected_ids = {"speech", "translate", "ocr", "clipboard", "notes", "actions"}
+        expected_ids = {"speech", "translate", "ocr", "clipboard", "notes", "actions", "processes", "ram", "settings"}
         self.assertEqual(set(ids), expected_ids)
 
     def test_hud_modules_structure_and_status(self):
-        """Weryfikacja poprawności pól każdego z 6 modułów HUD."""
+        """Weryfikacja poprawności pól każdego z 9 modułów HUD."""
         for mod in HUD_MODULES_CONFIG:
             self.assertIn("id", mod)
             self.assertIn("title", mod)

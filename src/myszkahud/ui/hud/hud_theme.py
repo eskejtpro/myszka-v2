@@ -56,13 +56,14 @@ class HUDColorPalette:
 DEFAULT_HUD_THEME = HUDColorPalette()
 
 
-# Konfiguracja 6 modułów radialnego HUD (kąty, ikony, akcenty, podtytuły)
-# Kąty w układzie ekranowym: 270° = Góra, 330° = Prawa-Góra, 30° = Prawa-Dół, 
-# 90° = Dół, 150° = Lewa-Dół, 210° = Lewa-Góra
+# Konfiguracja 9 modułów radialnego HUD (kąty, ikony, akcenty, podtytuły)
+# Kąty co 40° w pełnym okręgu 360°:
+# 270° = Góra (Głos), 310° = Tłumacz, 350° = OCR, 30° = Schowek, 70° = Notatki,
+# 110° = Akcje, 150° = Procesy, 190° = RAM, 230° = Ustawienia
 HUD_MODULES_CONFIG = [
     {
         "id": "speech",
-        "title": "MIKROFON",
+        "title": "GŁOS / STT",
         "icon": "🎙",
         "subtitle": "Mowa → Tekst",
         "angle_deg": 270,
@@ -74,7 +75,7 @@ HUD_MODULES_CONFIG = [
         "title": "TŁUMACZ",
         "icon": "🌐",
         "subtitle": "AI Translation",
-        "angle_deg": 330,
+        "angle_deg": 310,
         "accent_color": "#2DD4BF",
         "status": "READY",
     },
@@ -83,7 +84,7 @@ HUD_MODULES_CONFIG = [
         "title": "OCR",
         "icon": "👁",
         "subtitle": "Tekst z ekranu",
-        "angle_deg": 30,
+        "angle_deg": 350,
         "accent_color": "#38BDF8",
         "status": "READY",
     },
@@ -92,7 +93,7 @@ HUD_MODULES_CONFIG = [
         "title": "SCHOWEK",
         "icon": "📋",
         "subtitle": "Historia",
-        "angle_deg": 90,
+        "angle_deg": 30,
         "accent_color": "#10B981",
         "status": "READY",
     },
@@ -100,8 +101,8 @@ HUD_MODULES_CONFIG = [
         "id": "notes",
         "title": "NOTATKI",
         "icon": "📝",
-        "subtitle": "Szybkie notatki",
-        "angle_deg": 150,
+        "subtitle": "Szybki notes",
+        "angle_deg": 70,
         "accent_color": "#F59E0B",
         "status": "READY",
     },
@@ -109,9 +110,36 @@ HUD_MODULES_CONFIG = [
         "id": "actions",
         "title": "AKCJE",
         "icon": "⚡",
-        "subtitle": "Tekst / Windows",
-        "angle_deg": 210,
+        "subtitle": "Operacje tekstu",
+        "angle_deg": 110,
         "accent_color": "#818CF8",
+        "status": "READY",
+    },
+    {
+        "id": "processes",
+        "title": "PROCESY",
+        "icon": "🔲",
+        "subtitle": "Menedżer apek",
+        "angle_deg": 150,
+        "accent_color": "#6366F1",
+        "status": "READY",
+    },
+    {
+        "id": "ram",
+        "title": "RAM",
+        "icon": "📈",
+        "subtitle": "Monitor & Flush",
+        "angle_deg": 190,
+        "accent_color": "#EC4899",
+        "status": "READY",
+    },
+    {
+        "id": "settings",
+        "title": "USTAWIENIA",
+        "icon": "⚙️",
+        "subtitle": "Konfiguracja",
+        "angle_deg": 230,
+        "accent_color": "#0EA5E9",
         "status": "READY",
     },
 ]

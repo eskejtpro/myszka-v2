@@ -37,12 +37,12 @@ class RadialHUDWindow(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setAttribute(Qt.WA_ShowWithoutActivating, False)
         
-        # Całkowity wymiar radialnego obszaru
-        self.hud_size = 430
+        # Całkowity wymiar radialnego obszaru (dla 9 modułów)
+        self.hud_size = 520
         self.setFixedSize(self.hud_size, self.hud_size)
         
         # Promień rozmieszczenia kafelków
-        self.orbit_radius = 142
+        self.orbit_radius = 182
         
         self._init_ui()
 

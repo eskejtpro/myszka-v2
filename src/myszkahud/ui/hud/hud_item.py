@@ -42,7 +42,7 @@ class HUDItemButton(QPushButton):
         self.theme = theme
         
         # Wymiary kafelka
-        self.setFixedSize(108, 72)
+        self.setFixedSize(100, 64)
         self.setCursor(QCursor(Qt.PointingHandCursor))
         self.setAttribute(Qt.WA_Hover, True)
         

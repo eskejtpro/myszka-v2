@@ -47,9 +47,9 @@ interface ModuleConfig {
 const MODULES: ModuleConfig[] = [
   {
     id: 'speech',
-    title: 'MIKROFON',
+    title: 'GŁOS / STT',
     subtitle: 'Mowa → Tekst',
-    icon: <Mic className="w-5 h-5" />,
+    icon: <Mic className="w-4 h-4" />,
     angleDeg: 270,
     accentColor: '#0284C7',
     status: 'READY',
@@ -60,8 +60,8 @@ const MODULES: ModuleConfig[] = [
     id: 'translate',
     title: 'TŁUMACZ',
     subtitle: 'AI Translation',
-    icon: <Languages className="w-5 h-5" />,
-    angleDeg: 330,
+    icon: <Languages className="w-4 h-4" />,
+    angleDeg: 310,
     accentColor: '#2DD4BF',
     status: 'READY',
     description: 'Tłumaczenie zaznaczonego tekstu przez Gemini 3.7 Flash z fallbackiem do 3.6 Flash.',
@@ -71,8 +71,8 @@ const MODULES: ModuleConfig[] = [
     id: 'ocr',
     title: 'OCR',
     subtitle: 'Tekst z ekranu',
-    icon: <ScanText className="w-5 h-5" />,
-    angleDeg: 30,
+    icon: <ScanText className="w-4 h-4" />,
+    angleDeg: 350,
     accentColor: '#38BDF8',
     status: 'READY',
     description: 'Wycinek ekranu (Snipping Tool) i odczyt tekstu za pomocą Gemini Vision OCR.',
@@ -81,9 +81,9 @@ const MODULES: ModuleConfig[] = [
   {
     id: 'clipboard',
     title: 'SCHOWEK',
-    subtitle: 'Historia & Notes',
-    icon: <ClipboardList className="w-5 h-5" />,
-    angleDeg: 90,
+    subtitle: 'Historia',
+    icon: <ClipboardList className="w-4 h-4" />,
+    angleDeg: 30,
     accentColor: '#10B981',
     status: 'READY',
     description: 'Lokalna historia schowka SQLite z zabezpieczeniem Self-Change Suppression i wyszukiwarką.',
@@ -93,8 +93,8 @@ const MODULES: ModuleConfig[] = [
     id: 'notes',
     title: 'NOTATKI',
     subtitle: 'Szybki notes',
-    icon: <StickyNote className="w-5 h-5" />,
-    angleDeg: 150,
+    icon: <StickyNote className="w-4 h-4" />,
+    angleDeg: 70,
     accentColor: '#F59E0B',
     status: 'READY',
     description: 'Podręczny notes z przypinaniem, edycją i natychmiastowym wklejaniem pod kursor.',
@@ -103,13 +103,46 @@ const MODULES: ModuleConfig[] = [
   {
     id: 'actions',
     title: 'AKCJE',
-    subtitle: 'Tekst / Windows',
-    icon: <Zap className="w-5 h-5" />,
-    angleDeg: 210,
+    subtitle: 'Operacje tekstu',
+    icon: <Zap className="w-4 h-4" />,
+    angleDeg: 110,
     accentColor: '#818CF8',
     status: 'READY',
     description: 'Menu szybkich operacji tekstowych (Kopiuj, Wklej, Zastąp, Formatuj).',
     versionStage: 'v0.2 (Zrealizowane)',
+  },
+  {
+    id: 'processes',
+    title: 'PROCESY',
+    subtitle: 'Menedżer apek',
+    icon: <Activity className="w-4 h-4" />,
+    angleDeg: 150,
+    accentColor: '#6366F1',
+    status: 'READY',
+    description: 'Menedżer procesów z bezpiecznym zamykaniem WM_CLOSE i ochroną procesów systemowych.',
+    versionStage: 'v0.7 (Zrealizowane)',
+  },
+  {
+    id: 'ram',
+    title: 'RAM',
+    subtitle: 'Monitor & Flush',
+    icon: <Sparkles className="w-4 h-4" />,
+    angleDeg: 190,
+    accentColor: '#EC4899',
+    status: 'READY',
+    description: 'Konserwatywny monitor RAM i zwalnianie pamięci przez EmptyWorkingSet.',
+    versionStage: 'v0.8 (Zrealizowane)',
+  },
+  {
+    id: 'settings',
+    title: 'USTAWIENIA',
+    subtitle: 'Konfiguracja',
+    icon: <Settings className="w-4 h-4" />,
+    angleDeg: 230,
+    accentColor: '#0EA5E9',
+    status: 'READY',
+    description: 'Centrum konfiguracji, skróty klawiszowe, autostart Windows i parametry modeli AI.',
+    versionStage: 'v0.9 (Zrealizowane)',
   },
 ];
 
@@ -153,9 +186,9 @@ export default function App() {
     h: 120,
   });
 
-  const radius = 150;
-  const centerX = 220;
-  const centerY = 220;
+  const radius = 175;
+  const centerX = 240;
+  const centerY = 240;
 
   // Clipboard & Notes state simulation
   const [clipboardItems, setClipboardItems] = useState<MockClipItem[]>([
@@ -229,8 +262,20 @@ export default function App() {
       setCurrentView('snipping');
     } else if (mod.id === 'translate') {
       setCurrentView('translation');
-    } else if (mod.id === 'clipboard' || mod.id === 'notes') {
+    } else if (mod.id === 'clipboard') {
+      setClipFilter('clip');
       setCurrentView('clipboard');
+    } else if (mod.id === 'notes') {
+      setClipFilter('notes');
+      setCurrentView('clipboard');
+    } else if (mod.id === 'processes') {
+      setCurrentView('processes');
+    } else if (mod.id === 'ram') {
+      setCurrentView('ram');
+    } else if (mod.id === 'settings') {
+      setCurrentView('settings');
+    } else if (mod.id === 'actions') {
+      setCurrentView('translation');
     }
   };
 
@@ -533,8 +578,8 @@ export default function App() {
           
           {/* VIEW 1: RADIAL HUD */}
           {currentView === 'hud' && (
-            <div className="relative w-[440px] h-[440px] flex items-center justify-center animate-in fade-in duration-200">
-              <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 440 440">
+            <div className="relative w-[480px] h-[480px] flex items-center justify-center animate-in fade-in duration-200">
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 480 480">
                 {MODULES.map((m) => {
                   const rad = (m.angleDeg * Math.PI) / 180;
                   const x1 = centerX + 45 * Math.cos(rad);
@@ -571,7 +616,7 @@ export default function App() {
                 <circle
                   cx={centerX}
                   cy={centerY}
-                  r={radius + 40}
+                  r={radius + 36}
                   fill="none"
                   stroke="rgba(30, 41, 59, 0.4)"
                   strokeWidth="1"
@@ -580,8 +625,9 @@ export default function App() {
 
               {/* Center Card */}
               <div
-                className="absolute z-10 w-[140px] h-[78px] rounded-[14px] bg-[rgba(13,20,36,0.95)] border border-[#2563EB] shadow-[0_0_25px_rgba(37,99,235,0.35)] flex flex-col items-center justify-center p-2 cursor-pointer transition-all hover:scale-105"
-                onClick={() => handleModuleClick(MODULES[2])}
+                className="absolute z-10 w-[136px] h-[74px] rounded-[14px] bg-[rgba(13,20,36,0.95)] border border-[#2563EB] shadow-[0_0_25px_rgba(37,99,235,0.35)] flex flex-col items-center justify-center p-2 cursor-pointer transition-all hover:scale-105"
+                onClick={() => setCurrentView('settings')}
+                title="Kliknij, aby otworzyć Centrum Ustawień"
               >
                 <span className="text-[13px] font-extrabold text-[#38BDF8] tracking-wider">
                   MyszkaHUD
@@ -593,11 +639,11 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 6 Radial Module Cards */}
+              {/* 9 Radial Module Cards */}
               {MODULES.map((m) => {
                 const rad = (m.angleDeg * Math.PI) / 180;
-                const posX = centerX + radius * Math.cos(rad) - 54;
-                const posY = centerY + radius * Math.sin(rad) - 36;
+                const posX = centerX + radius * Math.cos(rad) - 49;
+                const posY = centerY + radius * Math.sin(rad) - 32;
                 const isSelected = selectedModule.id === m.id;
                 const isHovered = hoveredModule === m.id;
 
@@ -614,7 +660,7 @@ export default function App() {
                       borderColor: isSelected || isHovered ? m.accentColor : 'rgba(51, 65, 85, 0.65)',
                       boxShadow: isSelected || isHovered ? `0 0 16px ${m.accentColor}33` : '0 4px 12px rgba(0,0,0,0.5)',
                     }}
-                    className={`absolute w-[108px] h-[72px] rounded-[12px] p-1.5 flex flex-col items-center justify-center text-center transition-all duration-150 cursor-pointer ${
+                    className={`absolute w-[98px] h-[64px] rounded-[10px] p-1 flex flex-col items-center justify-center text-center transition-all duration-150 cursor-pointer ${
                       isSelected
                         ? 'bg-[rgba(30,41,59,0.98)] scale-105 border-[1.5px]'
                         : isHovered
@@ -625,10 +671,10 @@ export default function App() {
                     <div style={{ color: m.accentColor }} className="mb-0.5">
                       {m.icon}
                     </div>
-                    <span className="text-[11px] font-bold text-slate-100 tracking-wide leading-tight">
+                    <span className="text-[10px] font-bold text-slate-100 tracking-wide leading-tight">
                       {m.title}
                     </span>
-                    <span className="text-[9px] text-slate-400 leading-tight">
+                    <span className="text-[8.5px] text-slate-400 leading-tight">
                       {m.subtitle}
                     </span>
                   </button>
