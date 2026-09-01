@@ -49,6 +49,14 @@ except ImportError:
         Key_Escape = 0x01000000
         AlignCenter = 0x0004
 
+    class MockHelper:
+        def __init__(self, *args, **kwargs):
+            pass
+        def __getattr__(self, name):
+            def _dummy(*args, **kwargs):
+                return None
+            return _dummy
+
     QVBoxLayout = MockWidget
     QHBoxLayout = MockWidget
     QLabel = MockWidget
@@ -59,10 +67,10 @@ except ImportError:
     QGraphicsDropShadowEffect = MockWidget
     QButtonGroup = MockWidget
     Qt = MockQt
-    QPoint = object
-    QColor = object
-    QCursor = object
-    QGuiApplication = object
+    QPoint = MockHelper
+    QColor = MockHelper
+    QCursor = MockHelper
+    QGuiApplication = MockHelper
 
 from myszkahud.services.clipboard.clipboard_service import ClipboardService
 from myszkahud.services.clipboard.notes_service import NotesService

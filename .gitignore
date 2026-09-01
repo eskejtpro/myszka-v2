@@ -39,7 +39,7 @@ htmlcov/
 logs/
 cache/
 data/
-settings/
+/settings/
 *.log
 *.db
 *.sqlite

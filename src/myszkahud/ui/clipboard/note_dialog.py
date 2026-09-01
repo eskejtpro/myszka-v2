@@ -54,6 +54,14 @@ except ImportError:
         WA_TranslucentBackground = 120
         Key_Escape = 0x01000000
 
+    class MockHelper:
+        def __init__(self, *args, **kwargs):
+            pass
+        def __getattr__(self, name):
+            def _dummy(*args, **kwargs):
+                return None
+            return _dummy
+
     QVBoxLayout = MockWidget
     QHBoxLayout = MockWidget
     QLabel = MockWidget
@@ -63,10 +71,10 @@ except ImportError:
     QCheckBox = MockWidget
     QGraphicsDropShadowEffect = MockWidget
     Qt = MockQt
-    QPoint = object
-    QColor = object
-    QCursor = object
-    QGuiApplication = object
+    QPoint = MockHelper
+    QColor = MockHelper
+    QCursor = MockHelper
+    QGuiApplication = MockHelper
 
 
 class NoteDialog(QWidget):
