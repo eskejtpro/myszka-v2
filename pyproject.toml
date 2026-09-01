@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "myszkahud"
-version = "0.1.0"
+version = "1.0.0"
 description = "Nowoczesny radialny HUD narzędziowy pod kursorem myszy dla Windows 10 x64"
 readme = "README.md"
 requires-python = ">=3.10"

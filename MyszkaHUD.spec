@@ -18,7 +18,7 @@ src_path = os.path.join(project_root, "src")
 # Ukryte importy wymagane przez architekturę dynamiczną i providery
 hidden_imports = [
     "myszkahud",
-    "myszkahud.main",
+    "myszkahud.__main__",
     "myszkahud.application",
     "myszkahud.core",
     "myszkahud.core.hotkeys",
@@ -50,7 +50,7 @@ hidden_imports = [
 ]
 
 # Dodanie opcjonalnych pakietów jeśli są obecne
-for pkg in ["psutil", "google.genai", "winsdk"]:
+for pkg in ["psutil", "google.genai"]:
     try:
         hidden_imports.extend(collect_submodules(pkg))
     except Exception:
@@ -71,7 +71,7 @@ excludes = [
 ]
 
 a = Analysis(
-    [os.path.join(src_path, "myszkahud", "main.py")],
+    [os.path.join(src_path, "myszkahud", "__main__.py")],
     pathex=[src_path, project_root],
     binaries=[],
     datas=[],

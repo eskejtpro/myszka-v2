@@ -1,4 +1,4 @@
-"""Modele danych dla Centrum Ustawień (Settings Center v0.9)."""
+"""Modele danych dla Centrum Ustawień (Settings Center v1.0.0)."""
 
 from dataclasses import dataclass, field, asdict
 from typing import Dict, Any, Optional
@@ -14,7 +14,7 @@ class HotkeySettings:
 
 @dataclass
 class HudSettings:
-    size_diameter: int = 400
+    size_diameter: int = 520
     opacity: float = 0.96
     animations_enabled: bool = True
     auto_close_on_action: bool = True
@@ -30,14 +30,14 @@ class AppearanceSettings:
 @dataclass
 class SpeechSettings:
     language: str = "pl-PL"
-    max_recording_seconds: int = 15
-    preferred_provider: str = "gemini"  # "gemini" | "windows_speech"
+    max_recording_seconds: int = 60
+    preferred_provider: str = "gemini"
     auto_paste_result: bool = True
 
 
 @dataclass
 class OcrSettings:
-    preferred_provider: str = "gemini_vision"  # "gemini_vision" | "windows_ocr"
+    preferred_provider: str = "gemini_vision"
     auto_copy_result: bool = True
 
 
@@ -45,7 +45,7 @@ class OcrSettings:
 class ClipboardSettings:
     enabled: bool = True
     history_limit: int = 200
-    max_entry_length: int = 50000
+    max_entry_length: int = 100000
     is_paused: bool = False
 
 

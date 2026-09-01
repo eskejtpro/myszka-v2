@@ -8,13 +8,13 @@ echo.
 
 set PYTHONPATH=src
 
-echo [ETAP 1/4] Sprawdzanie kompilacji skladniowej Pythona (py_compile)...
-python -m py_compile src/myszkahud/main.py
+echo [ETAP 1/4] Sprawdzanie kompilacji skladniowej calego projektu (compileall)...
+python -m compileall -q src tests
 if %errorlevel% neq 0 (
-    echo [BLAD] Blad kompilacji w main.py!
+    echo [BLAD] Blad skladniowy w kodzie zrodlowym!
     exit /b 1
 )
-echo [OK] Skladnia Pythona poprawna.
+echo [OK] Skladnia wszystkich modulow Pythona poprawna.
 
 echo.
 echo [ETAP 2/4] Uruchamianie pelnego zestawu testow jednostkowych...
@@ -35,8 +35,8 @@ if %errorlevel% neq 0 (
 echo [OK] Sciezki AppData prawidlowe i odizolowane od folderu programu.
 
 echo.
-echo [ETAP 4/4] Weryfikacja importu modulow rdzennych i GUI...
-python -c "import myszkahud.main; from myszkahud.application import MyszkaHUDApp; print('[OK] Glowna aplikacja MyszkaHUD zaimportowana poprawnie.')"
+echo [ETAP 4/4] Weryfikacja importu modulow rdzennych i GUI (Smoke Test)...
+python -c "import myszkahud.__main__; from myszkahud.application import MyszkaHUDApp; print('[OK] Glowna aplikacja MyszkaHUD (v1.0.0) zaimportowana poprawnie.')"
 if %errorlevel% neq 0 (
     echo [BLAD] Blad importu aplikacji!
     exit /b 1
